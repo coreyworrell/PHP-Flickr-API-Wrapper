@@ -42,8 +42,6 @@ class Flickr {
 		
 		$params['method'] = "flickr.$method";
 		
-		$params += self::$_params;
-		
 		return self::_request($params);
 	}
 	
@@ -71,7 +69,7 @@ class Flickr {
 		
 		$uri = self::$_rest_uri.'?'.http_build_query($params, NULL, '&');
 		
-		$cache_file = self::$cache_dir.md5($uri).'.txt';
+		$cache_file = trim(self::$cache_dir, '/').'/'.md5($uri).'.txt';
 		
 		if (file_exists($cache_file) AND time() < (filemtime($cache_file) + self::$cache_expire))
 		{
