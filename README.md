@@ -21,13 +21,3 @@ Easily make API calls to Flickr's REST services. Returns results as objects.
 	{
 		$photo_info = Flickr::call('photos.getInfo', array('photo_id' => $photo->id));
 	}
-	
-	// Now I want to grab someone else's photos
-	Flickr::$api_key = 'my_new_flickr_api_key';
-	
-	$params = array
-	(
-		'user_id' => 'my_new_flickr_user_id',
-	);
-	
-	$result = Flickr::call('people.getPublicPhotos', $params);
