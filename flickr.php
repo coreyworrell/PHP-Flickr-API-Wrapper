@@ -35,7 +35,7 @@ class Flickr {
 	 */
 	public static function call($method, array $params = array())
 	{
-		if (self::$api_key === NULL)
+		if (self::$api_key === NULL AND ! isset($params['api_key']))
 		{
 			throw new Exception('API Key must be set before calling a method!');
 		}
@@ -69,7 +69,7 @@ class Flickr {
 		
 		$uri = self::$_rest_uri.'?'.http_build_query($params, NULL, '&');
 		
-		$cache_file = trim(self::$cache_dir, '/').'/'.md5($uri).'.txt';
+		$cache_file = rtrim(self::$cache_dir, '/').'/'.md5($uri).'_flickr.txt';
 		
 		if (file_exists($cache_file) AND time() < (filemtime($cache_file) + self::$cache_expire))
 		{
@@ -93,22 +93,26 @@ class Flickr {
 	 */
 	private static function _cache()
 	{
-		$dir = trim(self::$cache_dir, '/').'/';
+		$dir = rtrim(self::$cache_dir, '/').'/';
 		
 		if ( ! is_dir($dir))
 		{
 			mkdir($dir, 0777);
 		}
 		
-		$iterator = dir($dir);
-		
-		while ($file = $iterator->read())
+		// Garbage collection
+		if (mt_rand(1, 100) === 1)
 		{
-			$file = $dir.$file;
+			$iterator = dir($dir);
 			
-			if (substr($file, -4) === '.txt' AND time() > (filemtime($file) + self::$cache_expire))
+			while ($file = $iterator->read())
 			{
-				unlink($file);
+				$file = $dir.$file;
+				
+				if (substr($file, -11) === '_flickr.txt' AND time() > (filemtime($file) + self::$cache_expire))
+				{
+					unlink($file);
+				}
 			}
 		}
 	}
